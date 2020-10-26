@@ -15,6 +15,10 @@
 		7B5C43D82524CAB7008E05A4 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7B5C43D62524CAB7008E05A4 /* LaunchScreen.storyboard */; };
 		7B5C43E32524CAB7008E05A4 /* JogoDaMemoriaTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B5C43E22524CAB7008E05A4 /* JogoDaMemoriaTests.swift */; };
 		7B5C43EE2524CAB7008E05A4 /* JogoDaMemoriaUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B5C43ED2524CAB7008E05A4 /* JogoDaMemoriaUITests.swift */; };
+		7B81FBFB252FB05B004F987C /* TimerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B81FBFA252FB05B004F987C /* TimerView.swift */; };
+		7BC83726252E67A70035E2D2 /* GridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BC83725252E67A70035E2D2 /* GridView.swift */; };
+		7BC8372E252E6AB70035E2D2 /* GameState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BC8372D252E6AB70035E2D2 /* GameState.swift */; };
+		7BC9A42D25379360002BBCE0 /* SocketsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BC9A42C25379360002BBCE0 /* SocketsManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -49,6 +53,10 @@
 		7B5C43E92524CAB7008E05A4 /* JogoDaMemoriaUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = JogoDaMemoriaUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		7B5C43ED2524CAB7008E05A4 /* JogoDaMemoriaUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JogoDaMemoriaUITests.swift; sourceTree = "<group>"; };
 		7B5C43EF2524CAB7008E05A4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		7B81FBFA252FB05B004F987C /* TimerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerView.swift; sourceTree = "<group>"; };
+		7BC83725252E67A70035E2D2 /* GridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GridView.swift; sourceTree = "<group>"; };
+		7BC8372D252E6AB70035E2D2 /* GameState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameState.swift; sourceTree = "<group>"; };
+		7BC9A42C25379360002BBCE0 /* SocketsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocketsManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -102,10 +110,14 @@
 				7B5C43CB2524CAB5008E05A4 /* AppDelegate.swift */,
 				7B5C43CD2524CAB5008E05A4 /* SceneDelegate.swift */,
 				7B5C43CF2524CAB5008E05A4 /* ViewController.swift */,
+				7BC83725252E67A70035E2D2 /* GridView.swift */,
+				7B81FBFA252FB05B004F987C /* TimerView.swift */,
+				7BC8372D252E6AB70035E2D2 /* GameState.swift */,
 				7B5C43D12524CAB5008E05A4 /* Main.storyboard */,
 				7B5C43D42524CAB7008E05A4 /* Assets.xcassets */,
 				7B5C43D62524CAB7008E05A4 /* LaunchScreen.storyboard */,
 				7B5C43D92524CAB7008E05A4 /* Info.plist */,
+				7BC9A42C25379360002BBCE0 /* SocketsManager.swift */,
 			);
 			path = JogoDaMemoria;
 			sourceTree = "<group>";
@@ -258,9 +270,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7B81FBFB252FB05B004F987C /* TimerView.swift in Sources */,
 				7B5C43D02524CAB5008E05A4 /* ViewController.swift in Sources */,
 				7B5C43CC2524CAB5008E05A4 /* AppDelegate.swift in Sources */,
+				7BC9A42D25379360002BBCE0 /* SocketsManager.swift in Sources */,
+				7BC8372E252E6AB70035E2D2 /* GameState.swift in Sources */,
 				7B5C43CE2524CAB5008E05A4 /* SceneDelegate.swift in Sources */,
+				7BC83726252E67A70035E2D2 /* GridView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
