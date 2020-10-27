@@ -35,6 +35,8 @@ class ViewController: UIViewController {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = "0"
+        label.textAlignment = .center
+        label.font = .boldSystemFont(ofSize: 48)
         return label
     }()
     
@@ -83,10 +85,10 @@ class ViewController: UIViewController {
         playerTwoLabel.trailingAnchor.constraint(equalTo: self.view.layoutMarginsGuide.trailingAnchor).isActive = true
         
         timerLabel.centerXAnchor.constraint(equalTo: self.view.centerXAnchor).isActive = true
-        timerLabel.topAnchor.constraint(equalTo: self.view.topAnchor, constant: 60).isActive = true
+        timerLabel.centerYAnchor.constraint(equalTo: playerOneLabel.centerYAnchor, constant: 0).isActive = true
         timerLabel.widthAnchor.constraint(equalTo: self.view.widthAnchor, multiplier: 0.5).isActive = true
-        timerLabel.heightAnchor.constraint(equalToConstant: 32).isActive = true
-        
+        timerLabel.heightAnchor.constraint(equalToConstant: 48).isActive = true
+                
         startButton.centerXAnchor.constraint(equalTo: self.view.centerXAnchor).isActive = true
         startButton.topAnchor.constraint(equalTo: timerLabel.bottomAnchor, constant: 8).isActive = true
         startButton.widthAnchor.constraint(equalToConstant: 70).isActive = true
