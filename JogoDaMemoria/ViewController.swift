@@ -9,7 +9,7 @@ import UIKit
 
 class ViewController: UIViewController {
     
-    lazy var gameState = GameState(delegate: self)
+    var gameState: GameState?
         
     lazy var grid: GridView = {
         let view = GridView(delegate: self)
@@ -96,14 +96,18 @@ class ViewController: UIViewController {
         restartButton.topAnchor.constraint(equalTo: startButton.bottomAnchor, constant: 8).isActive = true
         restartButton.widthAnchor.constraint(equalToConstant: 70).isActive = true
         restartButton.heightAnchor.constraint(equalToConstant: 32).isActive = true
+        
+        gameState = GameState(delegate: self)
+        
+        self.resetPlayersLabels()
     }
     
     @objc func didStartButtonPressed(_ sender: UITapGestureRecognizer?) {
-        gameState.begin()
+        gameState?.begin()
     }
     
     @objc func didRestartButtonPressed(_ sender: UITapGestureRecognizer?) {
-        gameState.restart()
+        gameState?.restart()
     }
     
     private func updateLabelsWithSignifierFor(player: GameState.Player) {
@@ -123,8 +127,8 @@ class ViewController: UIViewController {
         playerOneLabel.textColor = .black
         playerTwoLabel.textColor = .black
         
-        playerOneLabel.text = "Player 1: 0"
-        playerTwoLabel.text = "Player 2: 0"
+        playerOneLabel.text = "\(gameState?.yourPlayer == GameState.Player.playerOne ? "You" : "Player One"): 0"
+        playerTwoLabel.text = "\(gameState?.yourPlayer == GameState.Player.playerTwo ? "You" : "Player Two"): 0"
     }
     
     private func presentAlertFor(winner: GameState.Player) {
@@ -175,16 +179,25 @@ class ViewController: UIViewController {
 }
 
 extension ViewController: GameStateDelegate {
+    func didOtherPlayerFlippedWrongCard(card1: (Int, Int), card2: (Int, Int)) {
+        self.grid.flipBackCardOn(row: card1.0, col: card2.1)
+        self.grid.flipBackCardOn(row: card2.0, col: card2.1)
+    }
+    
+    func didConnected(with player: GameState.Player) {
+        self.resetPlayersLabels()
+    }
+    
     func didOtherPlayerFlipped(row: Int, col: Int) {
-        
+        self.grid.flipCardOn(row: row, col: col)
     }
     
     func didPlayerScored(player: GameState.Player, points: Int) {
         switch player {
         case .playerOne:
-            playerOneLabel.text = "Player One: \(points)"
+            playerOneLabel.text = "\(gameState?.yourPlayer == GameState.Player.playerOne ? "You" : "Player One"): \(points)"
         case .playerTwo:
-            playerTwoLabel.text = "Player Two: \(points)"
+            playerTwoLabel.text = "\(gameState?.yourPlayer == GameState.Player.playerTwo ? "You" : "Player Two"): \(points)"
         case .server:
             break
         }
@@ -197,13 +210,15 @@ extension ViewController: GameStateDelegate {
     func didRestartGame() {
         self.resetPlayersLabels()
         self.timerLabel.text = "0"
+        
+        self.grid.flipbackAll()
     }
     
     func didStartGame(with player: GameState.Player) {
         updateLabelsWithSignifierFor(player: player)
         self.timerLabel.text = "10"
         
-        grid.canInteract = gameState.canInteract
+        grid.canInteract = gameState?.canInteract ?? false
     }
     
     func didEndGame(winner: GameState.Player) {
@@ -214,7 +229,7 @@ extension ViewController: GameStateDelegate {
         updateLabelsWithSignifierFor(player: player)
         self.timerLabel.text = "10"
         
-        grid.canInteract = gameState.canInteract
+        grid.canInteract = gameState?.canInteract ?? false
     }
     
     func clockTicked(timeProgress: Int, for countdown: GameState.Countdown) {
@@ -224,12 +239,17 @@ extension ViewController: GameStateDelegate {
 }
 
 extension ViewController: GridViewDelegate {
-    func didFinishPlay() {
-        self.gameState.playerHasChosenWrongCards()
+    func didFinishPlay(card1Pos: (row: Int, col: Int), card2Pos: (row: Int, col: Int)) {
+        self.gameState?.playerHasChosenWrongCards(card1: card1Pos, card2: card2Pos)
+    }
+    
+    func didFlipped(row: Int, col: Int) {
+        self.gameState?.playerHasFlipped(row: row, col: col)
     }
     
     func didScored() {
-        self.gameState.playerHasScore(gameState.currentPlayer)
+        guard let gameState = gameState else { return }
+        gameState.playerHasScore(gameState.currentPlayer!)
     }
 }
 
