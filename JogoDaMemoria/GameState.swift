@@ -153,7 +153,13 @@ extension GameState: SocketManagerDelegate {
             self.delegate.didRestartGame()
             
         case .scored:
-            self.delegate.didPlayerScored(player: command.player, points: 0)
+            guard let valueString = command.value as? String else {
+                return
+            }
+            
+            let value = valueString.components(separatedBy: ":")[1]
+            
+            self.delegate.didPlayerScored(player: command.player, points: Int(value) ?? 0)
             
         case .wrongCard:
             if (command.player != yourPlayer) {
