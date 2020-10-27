@@ -9,8 +9,9 @@ import UIKit
 import GLKit
 
 protocol GridViewDelegate {
-    func didFinishPlay()
+    func didFinishPlay(card1Pos: (row: Int, col: Int), card2Pos: (row: Int, col: Int))
     func didScored()
+    func didFlipped(row: Int, col: Int)
 }
 
 class GridView: UIView {
@@ -113,6 +114,7 @@ class GridView: UIView {
                 return
             }
             
+            self.delegate.didFlipped(row: row, col: col)
             let isCardFlipped = cardState[row][col]
             
             if !isCardFlipped && !isAnimatingCard {
@@ -164,16 +166,25 @@ class GridView: UIView {
                 flipImageBack(imageView: flippedCards[0], duration: 0.3)
                 flipImageBack(imageView: flippedCards[1], duration: 0.3)
                 
-                for card in flippedCards {
+                var card1Pos = (0, 0)
+                var card2Pos = (0, 0)
+                
+                for (index, card) in flippedCards.enumerated() {
                     guard let (row, col) = getImageViewPositionIn(matrix: cards, imageView: card) else {
                         break
                     }
                     
                     cardState[row][col] = false
+                    
+                    if (index == 0) {
+                        card1Pos = (row, col)
+                    } else {
+                        card2Pos = (row, col)
+                    }
                 }
                 
                 flippedCards = []
-                delegate.didFinishPlay()
+                delegate.didFinishPlay(card1Pos: card1Pos, card2Pos: card2Pos)
             } else {
                 flippedCards = []
                 delegate.didScored()
@@ -193,6 +204,15 @@ class GridView: UIView {
         }
         
         return nil
+    }
+    
+    public func flipCardOn(row: Int, col: Int) {
+        self.flipImageView(imageView: cards[row][col], toImage: imagesGrid[row][col], duration: 0.3)
+    }
+    
+    public func flipBackCardOn(row: Int, col: Int) {
+        let card = cards[row][col]
+        self.flipImageBack(imageView: card, duration: 0.1)
     }
     
     private func flipImageView(imageView: UIImageView, toImage: UIImage, duration: TimeInterval, delay: TimeInterval = 0)
@@ -259,6 +279,15 @@ class GridView: UIView {
             }, completion: { (Bool) -> Void in
             })
         })
+    }
+    
+    public func flipbackAll() {
+        for (indexRow, row) in cards.enumerated() {
+            for (indexCol, card) in row.enumerated() {
+                cardState[indexRow][indexCol] = false
+                flipImageBack(imageView: card, duration: 0.1)
+            }
+        }
     }
 
 }

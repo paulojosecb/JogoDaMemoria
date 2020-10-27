@@ -1,23 +1,7 @@
 import UIKit
 
-enum MessageSender {
-    case ourself
-    case someoneElse
-}
-
 typealias JSONDictionary = [String : Any]
 
-struct Message {
-    let message: String
-    let senderUsername: String
-    let messageSender: MessageSender
-    
-    init(message: String, messageSender: MessageSender, username: String) {
-        self.message = message
-        self.messageSender = messageSender
-        self.senderUsername = username
-    }
-}
 
 class SocketManager: NSObject {
     //1
@@ -151,6 +135,7 @@ extension SocketManager: StreamDelegate {
             
             // Construct the message object
             if let command = processedCommandString(buffer: buffer, length: numberOfBytesRead) {
+                print(command.type)
                 delegate?.didReceived(command)
             }
         }
@@ -164,7 +149,7 @@ extension SocketManager: StreamDelegate {
                 bytesNoCopy: buffer,
                 length: length,
                 encoding: .utf8,
-                freeWhenDone: true)?.components(separatedBy: "?"),
+                freeWhenDone: false)?.components(separatedBy: "?"),
             let commandString = stringArray.first,
             let command = CommandType(rawValue: commandString.components(separatedBy: ":").last ?? ""),
             let playerString = stringArray.last,

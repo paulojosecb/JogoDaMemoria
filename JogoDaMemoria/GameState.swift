@@ -15,7 +15,9 @@ protocol GameStateDelegate {
     func didSwitchTurn(with player: GameState.Player)
     func didRestartGame()
     func clockTicked(timeProgress: Int, for countdown: GameState.Countdown)
-    func didOtherPlayerFlipped(row: Int, col: Int) 
+    func didOtherPlayerFlipped(row: Int, col: Int)
+    func didConnected(with player: GameState.Player)
+    func didOtherPlayerFlippedWrongCard(card1: (Int, Int), card2: (Int, Int))
 }
 
 protocol SocketManagerDelegate {
@@ -29,6 +31,8 @@ struct Command {
 }
 
 enum CommandType: String {
+    case connection = "connection"
+    case disconnection = "disconnection"
     case begin = "begin"
     case scored = "scored"
     case wrongCard = "wrondCard"
@@ -65,7 +69,7 @@ class GameState {
     
     let delegate: GameStateDelegate
     
-    let yourPlayer = Player.playerOne
+    var yourPlayer: Player?
     
     let manager: SocketManager
     
@@ -82,7 +86,15 @@ class GameState {
     var currentCountdown: Countdown = .startCountdown
     
     var isGamePlaying = false
-    var currentPlayer: Player = .playerOne
+    var currentPlayer: Player? = nil
+    var canStart: Bool {
+        get {
+            return false
+        }
+    }
+    
+    var playerOneConnected = false
+    var playerTwoConnected = false
     
     private var playerOnePoints = 0 {
         didSet {
@@ -104,23 +116,25 @@ class GameState {
     }
     
     public func begin() {
-        manager.send(Command(type: CommandType.begin, value: "", player: yourPlayer))
+        manager.send(Command(type: CommandType.begin, value: "", player: yourPlayer!))
     }
     
     public func playerHasScore(_ player: Player) {
-        manager.send(Command(type: CommandType.scored, value: "1", player: yourPlayer))
+        manager.send(Command(type: CommandType.scored, value: "1", player: yourPlayer!))
     }
     
-    public func playerHasChosenWrongCards() {
-        manager.send(Command(type: CommandType.wrongCard, value: "", player: yourPlayer))
+    public func playerHasChosenWrongCards(card1: (row: Int, col: Int), card2: (row: Int, col: Int)) {
+        let card1Pos = self.convertToPos(row: card1.row, col: card1.col)
+        let card2Pos = self.convertToPos(row: card2.row, col: card2.col)
+        manager.send(Command(type: CommandType.wrongCard, value: "\(card1Pos)!\(card2Pos)", player: yourPlayer!))
     }
     
     public func restart() {
-        manager.send(Command(type: CommandType.restart, value: "", player: yourPlayer))
+        manager.send(Command(type: CommandType.restart, value: "", player: yourPlayer!))
     }
     
     public func playerHasFlipped(row: Int, col: Int) {
-        manager.send(Command(type: CommandType.playerHasFlipped, value: "\(self.convertToPos(row: row, col: col))", player: yourPlayer))
+        manager.send(Command(type: CommandType.playerHasFlipped, value: "\(self.convertToPos(row: row, col: col))", player: yourPlayer!))
     }
     
 }
@@ -142,8 +156,19 @@ extension GameState: SocketManagerDelegate {
             self.delegate.didPlayerScored(player: command.player, points: 0)
             
         case .wrongCard:
-            break
-            
+            if (command.player != yourPlayer) {
+                guard let valueString = command.value as? String else {
+                    return
+                }
+                
+                let valueTuple = valueString.components(separatedBy: ":")[1]
+                let card1Pos = valueTuple.components(separatedBy: "!")[0]
+                let card2Pos = valueTuple.components(separatedBy: "!")[1]
+                
+                self.delegate.didOtherPlayerFlippedWrongCard(card1: self.convert(pos: Int(card1Pos)!), card2: self.convert(pos: Int(card2Pos)!))
+                
+            }
+
         case .clockTicked:
             guard let valueString = command.value as? String else {
                 return
@@ -161,19 +186,43 @@ extension GameState: SocketManagerDelegate {
             self.delegate.clockTicked(timeProgress: valueAsInt, for: countdown)
             
         case .startGame:
+            self.currentPlayer = command.player
             self.delegate.didStartGame(with: command.player)
             
         case .endGame:
             self.delegate.didEndGame(winner: command.player)
             
         case .switchTurn:
+            self.currentPlayer = command.player
             self.delegate.didSwitchTurn(with: command.player)
             
         case .playerHasFlipped:
             if (command.player != yourPlayer) {
-                let (r, c) = self.convert(pos: command.value as! Int)
+                guard let value = command.value as? String else {
+                    fatalError()
+                }
+                let (r, c) = self.convert(pos: Int(value.components(separatedBy: ":")[1])!)
                 self.delegate.didOtherPlayerFlipped(row: r, col: c)
             }
+        case .connection:
+            print("Connected")
+            if (currentPlayer == nil) {
+                self.yourPlayer = command.player
+            }
+            
+            switch command.player {
+            case .playerOne:
+                playerOneConnected = true
+            case .playerTwo:
+                playerTwoConnected = true
+            default:
+                break
+            }
+            
+            self.delegate.didConnected(with: command.player)
+            
+        case .disconnection:
+            break
         }
     }
     
@@ -183,7 +232,14 @@ extension GameState: SocketManagerDelegate {
     }
     
     private func convert(pos: Int) -> (Int, Int) {
-        return (0, 0)
+        if (pos == 0) {
+            return (0, 0)
+        } else {
+            let row = pos / numberOfColumns
+            let col = pos % numberOfColumns
+            
+            return (row, col)
+        }
     }
 
 }
