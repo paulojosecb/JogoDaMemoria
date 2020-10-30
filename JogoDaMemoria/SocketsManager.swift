@@ -2,7 +2,6 @@ import UIKit
 
 typealias JSONDictionary = [String : Any]
 
-
 class SocketManager: NSObject {
     //1
     var inputStream: InputStream!
@@ -38,38 +37,7 @@ class SocketManager: NSObject {
         inputStream.open()
         outputStream.open()
     }
-    
-//    func asString(jsonDictionary: JSONDictionary) -> String {
-//        do {
-//            let data = try JSONSerialization.data(withJSONObject: jsonDictionary, options: .prettyPrinted)
-//            return String(data: data, encoding: String.Encoding.utf8) ?? ""
-//        } catch {
-//            return ""
-//        }
-//    }
-//
-//    func joinChat(username: String) {
-//        //1
-//        let dict = [
-//            "iam": username
-//        ]
-//
-//        let data = asString(jsonDictionary: dict).data(using: .utf8)!
-//
-//        //2
-//        self.username = username
-//
-//        //3
-//        _ = data.withUnsafeBytes {
-//            guard let pointer = $0.baseAddress?.assumingMemoryBound(to: UInt8.self) else {
-//                print("Error joining chat")
-//                return
-//            }
-//            //4
-//            outputStream.write(pointer, maxLength: data.count)
-//        }
-//    }
-    
+
     func send(_ command: Command) {
         let message = "command:\(command.type.rawValue)?value:\(command.value)?player:\(command.player.rawValue)"
         
@@ -82,28 +50,7 @@ class SocketManager: NSObject {
             outputStream.write(pointer, maxLength: data.count)
         }
     }
-    
-//    func send(message: String) {
-//        let dict = [
-//            "message": username
-//        ]
-//        
-//        let data = asString(jsonDictionary: dict).data(using: .utf8)!
-//                
-//        _ = data.withUnsafeBytes {
-//            guard let pointer = $0.baseAddress?.assumingMemoryBound(to: UInt8.self) else {
-//                print("Error joining chat")
-//                return
-//            }
-//            outputStream.write(pointer, maxLength: data.count)
-//        }
-//    }
-    
-//    func stopChatSession() {
-//        inputStream.close()
-//        outputStream.close()
-//    }
-    
+
 }
 
 extension SocketManager: StreamDelegate {
