@@ -144,42 +144,9 @@ class ViewController: UIViewController {
         self.present(alertController, animated: true, completion: nil)
     }
 
-//    private func insert(image: UIImage, on matrix: inout [[UIImage]], count: inout Int) {
-//        
-//        if isMatrixComplete(&matrix) {
-//            return
-//        }
-//        
-//        let row = Int.random(in: 0..<numberOfRows)
-//        let col = Int.random(in: 0..<numberOfColumns)
-//        
-//        if matrix[row][col] == emptyImage {
-//            matrix[row].remove(at: col)
-//            matrix[row].insert(image, at: col)
-//            count += 1
-//        } else {
-//            insert(image: image, on: &matrix, count: &count)
-//        }
-//        
-//        if (count < 2) {
-//            insert(image: image, on: &matrix, count: &count)
-//        } else {
-//            return
-//        }
-//        
-//    }
-//    
-//    func isMatrixComplete(_ matrix: inout [[UIImage]]) -> Bool {
-//        let isEmptyImagePresent = matrix.reduce(false) { (previousResult, row) -> Bool in
-//            row.contains(emptyImage) || previousResult
-//        }
-//        
-//        //Se a imagem vazia estiver presente, não está completa
-//        return !isEmptyImagePresent
-//    }
-        
 }
 
+//Extensão para receber notificações do GameState
 extension ViewController: GameStateDelegate {
     func didOtherPlayerFlippedWrongCard(card1: (Int, Int), card2: (Int, Int)) {
         self.grid.flipBackCardOn(row: card1.0, col: card2.1)
@@ -240,6 +207,7 @@ extension ViewController: GameStateDelegate {
     
 }
 
+// Extensao de GridViewDelegate para receber notificações de ações no GridView
 extension ViewController: GridViewDelegate {
     func didFinishPlay(card1Pos: (row: Int, col: Int), card2Pos: (row: Int, col: Int)) {
         self.gameState?.playerHasChosenWrongCards(card1: card1Pos, card2: card2Pos)

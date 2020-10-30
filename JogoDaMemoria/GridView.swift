@@ -14,6 +14,13 @@ protocol GridViewDelegate {
     func didFlipped(row: Int, col: Int)
 }
 
+// Classe responsável por gerenciar os cartões na tela, assim como as ações realizadas e as animações das mesmas
+
+/* O grid consiste em uma matrix de UIImageViews que pode ser rotacionadas e ter uma imagem associadas a elas
+    Tais imagens são guardadas no imagesGrid e associadas a posição da matrix cards no momento da rotação. Além disso,
+    existe outra matrix, cardState, que guarda as informações se uma determinada carta está virada ou não
+ */
+
 class GridView: UIView {
     
     let margin = 10
@@ -72,6 +79,8 @@ class GridView: UIView {
     override func layoutSubviews() {
         super.layoutSubviews()
         
+        // Prepara o grid após o auto-layout da tela estiver calculado
+        
         if !hasBeenSetup {
             let gridWidth = self.bounds.width
             
@@ -126,6 +135,7 @@ class GridView: UIView {
         }
     }
     
+    //Inicializa a matrix de imagens
     private func initImagesGrid(with source: [UIImage]) -> [[UIImage]] {
         var imagesMatrix = Array(repeating: Array(repeating: emptyImage, count: numberOfColumns), count: numberOfRows)
                 
@@ -159,7 +169,8 @@ class GridView: UIView {
         return imagesMatrix
     }
     
-    
+    // Checa para determinar se as cardas viradas são iguais ou não. Caso sim, notifica o delegate que houve um acerto,
+    // Caso não, notifica o delegate que houve um erro e anima as cartas de volta a posição inicial
     private func check(flipperCards: [UIImageView]) {
         if flippedCards.count == 2 {
             if flippedCards.first?.image != flippedCards.last?.image {
@@ -192,6 +203,7 @@ class GridView: UIView {
         }
     }
     
+    //Retorna a posição na matrix de uma determina imagem
     private func getImageViewPositionIn(matrix: [[UIImageView]], imageView: UIImageView) -> (Int, Int)? {
         
         for (indexRow, row) in matrix.enumerated() {
@@ -206,15 +218,18 @@ class GridView: UIView {
         return nil
     }
     
+    //Método público para virar uma determinada carta
     public func flipCardOn(row: Int, col: Int) {
         self.flipImageView(imageView: cards[row][col], toImage: imagesGrid[row][col], duration: 0.3)
     }
     
+    //Método público para retornar uma carta a posição inicial
     public func flipBackCardOn(row: Int, col: Int) {
         let card = cards[row][col]
         self.flipImageBack(imageView: card, duration: 0.1)
     }
     
+    //Métodos de animação de virada das cartas
     private func flipImageView(imageView: UIImageView, toImage: UIImage, duration: TimeInterval, delay: TimeInterval = 0)
     {
         let t = duration / 2

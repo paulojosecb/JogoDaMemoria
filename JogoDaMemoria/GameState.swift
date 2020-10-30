@@ -44,6 +44,8 @@ enum CommandType: String {
     case playerHasFlipped = "playerHasFlipped"
 }
 
+//Classe que gerencia o estado do jogo. Na atual implementação, o estado do jogo é recebido através de conexão socket.
+// Logo, é necessário utilizar uma classe que seja responsável pela conexão para realizar as ações e receber as mensagens do GameState
 class GameState {
     
     enum Player : String {
@@ -139,11 +141,13 @@ class GameState {
     
 }
 
+//Extensão para receber notificãoes do SocketManager quanto aos comandos recebidos do servidor
 extension GameState: SocketManagerDelegate {
     func didReceived(_ command: Command) {
         self.parse(command)
     }
     
+    //Método para direcionar o comando certo para o delegate
     private func parse(_ command: Command) {
         switch command.type {
         case .begin:
@@ -232,11 +236,13 @@ extension GameState: SocketManagerDelegate {
         }
     }
     
+    //Converte uma posição da matrix para posição em vetor
     private func convertToPos(row: Int, col: Int) -> Int {
         let pos = (row * numberOfColumns) + col
         return pos
     }
     
+    //Convere uma posição de vetor para posição de matrix
     private func convert(pos: Int) -> (Int, Int) {
         if (pos == 0) {
             return (0, 0)
